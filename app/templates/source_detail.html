@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+    <link href="{% static 'css/vis-network.min.css' %}" rel="stylesheet">
+    <style>
+        #rel_graph {
+            width: 100%;
+            height: 600px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row" style="margin-top: 20px;">
+        Record no. {{ source.id }}. <a href="#">How do I cite this entry?</a>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">{{ source.title }}</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    {% if source.fields.all or source.language %}
+                        <li class="list-group-item">
+                            <dl class="dl-horizontal">
+                                {% if source.fields.all %}
+                                    <dt>Genre/Type Descriptor(s)</dt>
+                                    <dd>
+                                    {% for field in source.fields.all %}
+                                        {{ field }}{% if not forloop.last %}<br>{% endif %}
+                                    {% endfor %}
+                                    </dd>
+                                {% endif %}
+                                {% if source.language %}
+                                    <dt>Language</dt><dd>{{ source.language }}</dd>
+                                {% endif %}
+                            </dl>
+                        </li>
+                    {% endif %}
+                    {% if source.roleperson_set.all %}
+                        <li class="list-group-item">
+                            <dl class="dl-horizontal">
+                                {% for roleperson in source.roleperson_set.all %}
+                                    <dt>{{ roleperson.role }}</dt><dd>{{ roleperson.person }}</dd>
+                                {% endfor %}
+                            </dl>
+                        </li>
+                    {% endif %}
+                    {% if source.container or source.series_title or source.series_number or source.formats.all or source.pages or source.publisher or source.pub_year or source.locations.all or source.volume or source.volume_number or source.issue or source.edition %}
+                        <li class="list-group-item">
+                            <dl class="dl-horizontal">
+                                {% if source.container %}
+                                    <dt>Contained in</dt><dd>{{ source.container }}</dd>
+                                {% endif %}
+                                {% if source.series_title %}
+                                    <dt>Serial Title</dt><dd>{{ source.series_title }}</dd>
+                                {% endif %}
+                                {% if source.series_number %}
+                                    <dt>Series Number</dt><dd>{{ source.series_number }}</dd>
+                                {% endif %}
+                                {% if source.volume %}
+                                    <dt>Volume</dt><dd>{{ source.volume }}</dd>
+                                {% endif %}
+                                {% if source.volume_number %}
+                                    <dt>Volume Number</dt><dd>{{ source.volume_number }}</dd>
+                                {% endif %}
+                                {% if source.issue %}
+                                    <dt>Issue</dt><dd>{{ source.issue }}</dd>
+                                {% endif %}
+                                {% if source.edition %}
+                                    <dt>Edition</dt><dd>{{ source.edition }}</dd>
+                                {% endif %}
+                                {% if source.pages %}
+                                    <dt>Location Details</dt><dd>{{ source.pages }}</dd>
+                                {% endif %}
+                                {% if source.locations.all %}
+                                    <dt>City</dt>
+                                    <dd>
+                                    {% for location in source.locations.all %}
+                                        {{ location }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                    </dd>
+                                {% endif %}
+                                {% if source.publisher %}
+                                    <dt>Publisher</dt><dd>{{ source.publisher }}</dd>
+                                {% endif %}
+                                {% if source.pub_year %}
+                                    <dt>Date</dt><dd>{{ source.pub_year }}</dd>
+                                {% endif %}
+                            </dl>
+                        </li>
+                    {% endif %}
+                    {% if relationships %}
+                        <li class="list-group-item">
+                            <dl class="dl-horizontal">
+                                <dt>Relationships</dt>
+                                <dd>
+                                {% for relation in relationships %}
+                                    {{ relation.relationship }} -> <a href="/detail?id={{ relation.to_source.id }}" target="_blank">{{ relation.to_source }}</a><br>
+                                {% endfor %}
+                                    <button id="show_graph_button" type="button" class="btn btn-primary">
+                                        Visualize Relationships
+                                    </button>
+                                </dd>
+                            </dl>
+                            <div id="rel_graph" class="hidden"></div>
+                        </li>
+                    {% endif %}
+                    {% if source.doi or source.notes or source.notes2 or source.notes3 or source.notes4 %}
+                        <li class="list-group-item">
+                            <dl class="dl-horizontal">
+                                {% if source.doi %}
+                                    <dt>Identifying Numbers</dt><dd>{{ source.doi }}</dd><dt>&nbsp;</dt><dd></dd>
+                                {% endif %}
+                                {% if source.notes %}
+                                    <dt>Descriptive Notes</dt><dd>{{ source.notes|safe }}</dd><dt>&nbsp;</dt><dd></dd>
+                                {% endif %}
+                                {% if source.notes2 %}
+                                    <dt>Scholarship</dt><dd>{{ source.notes2|safe }}</dd><dt>&nbsp;</dt><dd></dd>
+                                {% endif %}
+                                {% if source.notes3 %}
+                                    <dt>Notes on Prior Documentation</dt><dd>{{ source.notes3|safe }}</dd><dt>&nbsp;</dt><dd></dd>
+                                {% endif %}
+                                {% if source.notes4 %}
+                                    <dt>Authentication</dt><dd>{{ source.notes4|safe }}</dd>
+                                {% endif %}
+                            </dl>
+                        </li>
+                    {% endif %}
+                    {% if last_update %}
+                        <li class="list-group-item">
+                            <dl class="dl-horizontal">
+                                <dt>Last Updated</dt><dd>{{ last_update }}</dd>
+                            </dl>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="panel-footer">
+                <a href="/">Back to Bibliography</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript" src="{% static 'js/vis-network.js' %}"></script>
+    <script type="text/javascript">
+        let target_id = "{{ source.id }}";
+
+        $(document).ready(function() {
+            let show_graph_button = $('#show_graph_button');
+            show_graph_button.click(function() {
+                show_graph_button.append(` <img src="{% static 'img/loading.gif' %}" height="14px" />`);
+                let graph = $('#rel_graph');
+                graph.removeClass('hidden');
+
+                $.getJSON( `/graph?id=${target_id}`, function(data) {
+                    let options = {
+                        nodes: {
+                            shape: 'box',
+                            font: {
+                                color: '#FFFFFF',
+                                size: 16
+                            },
+                            margin: 10
+                        },
+                        edges: {
+                            smooth: {
+                                type: "cubicBezier",
+                                forceDirection: "vertical",
+                                roundness: 0.4,
+                            },
+                        },
+                        layout: {
+                            hierarchical: {
+                                direction: "UD",
+                            },
+                        },
+                        physics: {
+                            hierarchicalRepulsion: {
+                                avoidOverlap: 1,
+                                nodeDistance: 200,
+                            },
+                        },
+                        interaction: {
+                            hover: true,
+                            zoomSpeed: .5
+                        }
+                    };
+                    let network = new vis.Network($('#rel_graph')[0], data, options);
+
+                    network.on("stabilized", function() {
+                        network.fit({nodes: ['{{ source.id }}']});
+                        network.setSelection({nodes: ['{{ source.id }}']}, {highlightEdges: true});
+                        show_graph_button.addClass('hidden');
+                        graph[0].scrollIntoView();
+                    });
+
+                    network.on("click", function(params) {
+                        if (params.nodes.length > 0) {
+                            let clicked_node = params.nodes[0];
+                            if (clicked_node !== target_id)
+                                window.open(`/detail?id=${clicked_node}`, '_blank');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}

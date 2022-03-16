@@ -1,0 +1,90 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Beowulf's Afterlives</title>
+    <!--<link rel="stylesheet" type="text/css" href="{% static 'css/datatables.min.css' %}"/>-->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs-3.3.7/jq-2.2.4/dt-1.10.15/datatables.min.css"/>
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon" />
+    <link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro|Nunito" rel="stylesheet">
+    <link href="{% static 'css/wbhb.css' %}" rel="stylesheet">
+    {% block css %}{% endblock %}
+    <style type="text/css">
+        #source-table_wrapper th {
+            padding: 10px;
+            font-size: 16px;
+            color: #FFFFFF;
+            background-color: #5F0000;
+        }
+
+        .btn-primary {
+            background-color: #4281A4;
+            border-color: #376A87;
+        }
+
+        .btn-primary:hover {
+            background-color: #315E78;
+            border-color: #24475A;
+        }
+
+        .btn-info {
+            background-color: #7C2E2E;
+            border-color: #6D1717;
+        }
+
+        .btn-info:hover {
+            background-color: #6D1717;
+            border-color: #5F0000;
+        }
+
+        #source-table_wrapper th:first-child {
+            border-top-left-radius: 5px;
+        }
+
+        #source-table_wrapper th:last-child {
+            border-top-right-radius: 5px;
+        }
+
+        #source-table_wrapper th::after {
+            font-size: 14px;
+        }
+
+        .truncate {
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+    </style>
+</head>
+<body>
+    {% block modals %}{% endblock %}
+
+    <div class="container">
+        <div class="row" style="margin-bottom: 20px;">
+            <div class="col-sm-12 header-cell" style="padding-left: 20px;">
+                <a href="/"><img src="{% static 'img/header.png' %}" align="left" style="height: 100%; width: auto;"></a>
+                <div class="text-center" style="width: auto; height: 100%; display: flex; align-items: center; justify-content: center; margin-left: auto; margin-right: auto;">
+                    {% for page in pages %}
+                        <a class="btn btn-info"
+                           href="/page/{{ page.name }}"
+                           style="color: #FFFFFF; {% if not forloop.last %}margin-right: 10px;{% endif %}">{{ page.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {% block content %}{% endblock %}
+
+        <footer class="footer">
+            <p>The <a href="http://codhr.dh.tamu.edu">Center of Digital Humanities Research</a> at Texas A&M University</p>
+        </footer>
+    </div>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs-3.3.7/jq-2.2.4/dt-1.10.15/datatables.min.js"></script>
+
+    {% block javascript %}{% endblock %}
+
+</body>
+</html>

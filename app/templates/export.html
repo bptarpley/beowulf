@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    {% for source in sources %}
+        {{ source.title }}<br>
+    {% endfor %}
+{% endblock %}

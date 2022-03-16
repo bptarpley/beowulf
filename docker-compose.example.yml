@@ -1,0 +1,35 @@
+version: '2.0'
+
+services:
+  django:
+    build: ./app/
+    command: bash -C '/usr/src/app/start.sh'
+    #command: tail -F /dev/null
+    environment:
+      DJANGO_SECRET_KEY: averysecretkeyforencryptingsessiondata
+      DB_HOST: mysql
+      DB_DB: beowulf
+      DB_USER: beowulf
+      DB_PWD: beowulf
+    volumes:
+      - ./app:/usr/src/app
+      - ./static:/static
+    depends_on:
+      - mysql
+    links:
+      - mysql:mysql
+    ports:
+      - '80:8000'
+
+  mysql:
+    image: mysql:8.0.26
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql/mysql_backup_beowulf_20220307-020015.sql:/docker-entrypoint-initdb.d/data.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: beowulf
+      MYSQL_DATABASE: beowulf
+      MYSQL_USER: beowulf
+      MYSQL_PASSWORD: beowulf

@@ -1,0 +1,5 @@
+Django==3.2.12
+django-tinymce==3.4.0
+gunicorn==20.1.0
+mysqlclient==2.1.0
+uWSGI==2.0.20
