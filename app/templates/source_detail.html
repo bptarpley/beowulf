@@ -20,7 +20,7 @@
             </div>
             <div class="panel-body">
                 <ul class="list-group">
-                    {% if source.fields.all or source.language %}
+                    {% if source.fields.all or source.languages %}
                         <li class="list-group-item">
                             <dl class="dl-horizontal">
                                 {% if source.fields.all %}
@@ -31,8 +31,13 @@
                                     {% endfor %}
                                     </dd>
                                 {% endif %}
-                                {% if source.language %}
-                                    <dt>Language</dt><dd>{{ source.language }}</dd>
+                                {% if source.languages %}
+                                    <dt>Language(s)</dt>
+                                    <dd>
+                                    {% for lang in source.languages.all %}
+                                        {{ lang }}
+                                    {% endfor %}
+                                    </dd>
                                 {% endif %}
                             </dl>
                         </li>

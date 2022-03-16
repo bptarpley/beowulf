@@ -190,7 +190,7 @@ def sources(request):
                 elif filter_type == "location":
                     sources = sources.filter(locations__id=filter_id)
                 elif filter_type == "language":
-                    sources = sources.filter(language__id=filter_id)
+                    sources = sources.filter(languages__id=filter_id)
                 elif filter_type == "publisher":
                     sources = sources.filter(publisher__id=filter_id)
                 elif filter_type == "field":
@@ -238,12 +238,17 @@ def make_sources_dict(sources):
         if genres:
             fields = "<br>".join(genres)
 
+        languages = ""
+        langs = [str(l) for l in source.languages.all()]
+        if langs:
+            languages = "<br>".join(langs)
+
         s_data = [
             str(source.id),
             people,
             "<a href='/detail?id=" + str(source.id) + "' target='_blank'>" + source.title + "</a>",
             source.pub_year,
-            source.language.__str__(),
+            languages,
             countries,
             fields,
             source.notes,

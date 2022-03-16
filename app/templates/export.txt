@@ -13,6 +13,7 @@ Title: {{ source.title|safe }}
 {% endif %}{% if source.pages %}Location Details: {{ source.pages|safe }}
 {% endif %}{% if source.doi %}DOI: {{ source.doi|safe }}
 {% endif %}{% if source.formats.all %}Format(s): {% for format in source.formats.all %}{{ format|safe }}{% if not forloop.last %}, {% endif %}{% endfor %}
+{% endif %}{% if source.languages.all %}Language(s): {% for lang in source.languages.all %}{{ lang|safe }}{% if not forloop.last %}, {% endif %}{% endfor %}
 {% endif %}{% if source.fields.all %}Genre(s): {% for field in source.fields.all %}{{ field|safe }}{% if not forloop.last %}, {% endif %}{% endfor %}
 {% endif %}{% if source.locations.all %}Location(s): {% for location in source.locations.all %}{{ location|safe }}{% if not forloop.last %}, {% endif %}{% endfor %}
 {% endif %}{% if source.periods.all %}Period(s): {% for period in source.periods.all %}{{ period|safe }}{% if not forloop.last %}, {% endif %}{% endfor %}
