@@ -1,0 +1,12 @@
+docker-compose.yml
+*.bz2
+*.docx
+.idea
+mysql
+static
+app/sources_datatables.json
+app/todo.txt
+app/wbhb.txt
+app/load_data.py
+app/export.txt
+app/wbhb.egg-info
