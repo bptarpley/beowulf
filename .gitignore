@@ -11,5 +11,6 @@ app/load_data.py
 app/export.txt
 app/wbhb.egg-info
 *__pycache__*
-*migrations/*
-!*migrations/__init__.py
+app/wbhb/viewer/migrations/*
+!app/wbhb/viewer/migrations/__init__.py
+
