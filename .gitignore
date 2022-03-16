@@ -3,7 +3,7 @@ docker-compose.yml
 *.docx
 .idea
 mysql
-static
+/static
 app/sources_datatables.json
 app/todo.txt
 app/wbhb.txt
