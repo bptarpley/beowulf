@@ -122,17 +122,22 @@ def build_graph(source, graph, root=False):
 
     relationships = RelationSource.objects.filter(from_source=source).order_by('relationship')
     for relation in relationships:
-        node_ids = [n['id'] for n in graph['nodes']]
-        if str(relation.to_source.id) not in node_ids:
-            rel_label = str(relation.relationship)
+        rel_label = str(relation.relationship).strip()
+        if rel_label not in ['See also']:
+            node_ids = [n['id'] for n in graph['nodes']]
+            if str(relation.to_source.id) not in node_ids:
 
-            graph['edges'].append({
-                'from': str(source.id),
-                'to': str(relation.to_source.id),
-                'title': rel_label
-            })
+                rel_edge = {
+                    'from': str(source.id),
+                    'to': str(relation.to_source.id),
+                    'title': rel_label,
+                }
+                if rel_label in ['Forms series with', 'Collocates with', 'Also published as']:
+                    rel_edge['dashed'] = True
 
-            build_graph(relation.to_source, graph)
+                graph['edges'].append(rel_edge)
+
+                build_graph(relation.to_source, graph)
 
 
 def export(request):

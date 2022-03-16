@@ -86,6 +86,11 @@ div.dataTables_wrapper div.dataTables_filter, div.dataTables_wrapper div.dataTab
   white-space: normal;
 }
 
+.hanging-indent {
+  padding-left: 22px ;
+  text-indent: -22px ;
+}
+
 @media (min-width: 768px) {
   .navbar-nav {
     display: -webkit-box;

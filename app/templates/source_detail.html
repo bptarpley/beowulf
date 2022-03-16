@@ -29,7 +29,7 @@
                                     {% for field in source.fields.all %}
                                         {{ field }}{% if not forloop.last %}<br>{% endif %}
                                     {% endfor %}
-                                    </dd>
+                                    </dd><dt>&nbsp;</dt><dd></dd>
                                 {% endif %}
                                 {% if source.languages %}
                                     <dt>Language(s)</dt>
@@ -101,7 +101,7 @@
                                 <dt>Relationships</dt>
                                 <dd>
                                 {% for relation in relationships %}
-                                    {{ relation.relationship }} -> <a href="/detail?id={{ relation.to_source.id }}" target="_blank">{{ relation.to_source }}</a><br>
+                                    <div class="hanging-indent">{{ relation.relationship }} -> <a href="/detail?id={{ relation.to_source.id }}" target="_blank">{{ relation.to_source }}</a></div>
                                 {% endfor %}
                                     <button id="show_graph_button" type="button" class="btn btn-primary">
                                         Visualize Relationships
