@@ -279,7 +279,7 @@ class Source(models.Model):
     publisher = models.ForeignKey(Publisher, blank=True, null=True, on_delete=models.SET_NULL)
     pub_year = models.CharField(max_length=50, blank=True, null=True, verbose_name='Date')
     doi = models.CharField(max_length=200, blank=True, null=True, verbose_name='Identifying Numbers')
-    language = models.ForeignKey(Language, blank=True, null=True, on_delete=models.SET_NULL)
+    language = models.ForeignKey(Language, blank=True, null=True, on_delete=models.SET_NULL, related_name='old_language')
     languages = models.ManyToManyField(Language, blank=True, verbose_name='Languages')
     fields = models.ManyToManyField(Field, blank=True, verbose_name='Genre or Type Descriptor(s)')
     formats = models.ManyToManyField(Format, blank=True)
