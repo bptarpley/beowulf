@@ -6,6 +6,7 @@ services:
     command: bash -C '/usr/src/app/start.sh'
     #command: tail -F /dev/null
     environment:
+      BEOWULF_HOST: localhost
       DJANGO_SECRET_KEY: averysecretkeyforencryptingsessiondata
       DB_HOST: mysql
       DB_DB: beowulf
