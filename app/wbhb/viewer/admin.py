@@ -94,7 +94,7 @@ class LocationAliasAdmin(admin.ModelAdmin):
 @admin.register(Source)
 class SourceAdmin(admin.ModelAdmin):
     inlines = (RolePersonAdmin, RelationSourceAdmin)
-    search_fields = ('title', 'container', 'institution', 'series_title', 'roleperson__person__last_name', 'doi')
+    search_fields = ('title', 'container', 'institution', 'series_title', 'roleperson__person__last_name', 'roleperson__person__first_name', 'doi')
     exclude = ('periods',)
     formfield_overrides = {
         models.TextField: {
