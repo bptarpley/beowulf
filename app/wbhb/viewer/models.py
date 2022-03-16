@@ -32,8 +32,8 @@ class Language(models.Model):
             'name': self.name
         }
 
-    #class Meta:
-    #    ordering = ['name']
+    class Meta:
+        ordering = ['name']
 
 
 # GENRES
@@ -52,7 +52,7 @@ class Field(models.Model):
     class Meta:
         verbose_name = 'Genre'
         verbose_name_plural = 'Genres'
-        # ordering = ['name']
+        ordering = ['name']
 
 
 class Format(models.Model):
@@ -279,7 +279,9 @@ class Source(models.Model):
     publisher = models.ForeignKey(Publisher, blank=True, null=True, on_delete=models.SET_NULL)
     pub_year = models.CharField(max_length=50, blank=True, null=True, verbose_name='Date')
     doi = models.CharField(max_length=200, blank=True, null=True, verbose_name='Identifying Numbers')
+    primary_language = models.ForeignKey(Language, blank=True, null=True, on_delete=models.SET_NULL, related_name="primary_language", verbose_name='Primary Language')
     languages = models.ManyToManyField(Language, blank=True, verbose_name='Languages')
+    primary_genre = models.ForeignKey(Field, blank=True, null=True, on_delete=models.SET_NULL, related_name="primary_genre", verbose_name='Primary Genre')
     fields = models.ManyToManyField(Field, blank=True, verbose_name='Genre or Type Descriptor(s)')
     formats = models.ManyToManyField(Format, blank=True)
     roles = models.ManyToManyField(Role, through=RolePerson, blank=True)

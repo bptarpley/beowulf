@@ -94,6 +94,7 @@ class LocationAliasAdmin(admin.ModelAdmin):
 @admin.register(Source)
 class SourceAdmin(admin.ModelAdmin):
     inlines = (RolePersonAdmin, RelationSourceAdmin)
+    filter_horizontal = ('languages', 'fields')
     search_fields = ('title', 'container', 'institution', 'series_title', 'roleperson__person__last_name', 'roleperson__person__first_name', 'doi')
     exclude = ('periods',)
     formfield_overrides = {

@@ -240,11 +240,15 @@ def make_sources_dict(sources):
 
         fields = ""
         genres = [str(g) for g in source.fields.all()]
+        if source.primary_genre:
+            genres.insert(0, str(source.primary_genre))
         if genres:
             fields = "<br>".join(genres)
 
         languages = ""
         langs = [str(l) for l in source.languages.all()]
+        if source.primary_language:
+            langs.insert(0, str(source.primary_language))
         if langs:
             languages = "<br>".join(langs)
 

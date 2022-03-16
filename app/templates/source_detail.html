@@ -20,22 +20,28 @@
             </div>
             <div class="panel-body">
                 <ul class="list-group">
-                    {% if source.fields.all or source.languages %}
+                    {% if source.primary_genre or source.fields.all or source.primary_language or source.languages.all %}
                         <li class="list-group-item">
                             <dl class="dl-horizontal">
-                                {% if source.fields.all %}
+                                {% if source.primary_genre or source.fields.all %}
                                     <dt>Genre/Type Descriptor(s)</dt>
                                     <dd>
+                                    {% if source.primary_genre %}
+                                        {{ source.primary_genre }}{% if source.fields.all %}<br>{% endif %}
+                                    {% endif %}
                                     {% for field in source.fields.all %}
                                         {{ field }}{% if not forloop.last %}<br>{% endif %}
                                     {% endfor %}
                                     </dd><dt>&nbsp;</dt><dd></dd>
                                 {% endif %}
-                                {% if source.languages %}
+                                {% if source.primary_language or source.languages.all %}
                                     <dt>Language(s)</dt>
                                     <dd>
+                                    {% if source.primary_language %}
+                                        {{ source.primary_language }}{% if source.languages.all %}<br>{% endif %}
+                                    {% endif %}
                                     {% for lang in source.languages.all %}
-                                        {{ lang }}
+                                        {{ lang }}{% if not forloop.last %}<br>{% endif %}
                                     {% endfor %}
                                     </dd>
                                 {% endif %}
