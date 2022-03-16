@@ -10,3 +10,4 @@ app/wbhb.txt
 app/load_data.py
 app/export.txt
 app/wbhb.egg-info
+*__pycache__*
