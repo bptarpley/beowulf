@@ -133,7 +133,7 @@ def build_graph(source, graph, root=False):
                     'title': rel_label,
                 }
                 if rel_label in ['Forms series with', 'Collocates with', 'Also published as']:
-                    rel_edge['dashed'] = True
+                    rel_edge['dashes'] = True
 
                 graph['edges'].append(rel_edge)
 
