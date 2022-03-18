@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '@_le&sdkdgfhdfhdf^#$gjjg%7*&xref_5)0&+x4ae)__@gx5w5+dp')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = 'DEBUG_DJANGO' in os.environ
 
 ALLOWED_HOSTS = [os.environ.get('BEOWULF_HOST')]
 
