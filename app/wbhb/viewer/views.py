@@ -2,11 +2,12 @@ import os
 import re
 import json
 from django.shortcuts import render, HttpResponse
-from django.db.models import prefetch_related_objects
+from django.db.models import prefetch_related_objects, Q
 from django.utils.html import escape
 from django.conf import settings
 from django.template import loader, Context
 from django.db import connection
+
 from .models import *
 
 
@@ -195,11 +196,11 @@ def sources(request):
                 elif filter_type == "location":
                     sources = sources.filter(locations__id=filter_id)
                 elif filter_type == "language":
-                    sources = sources.filter(languages__id=filter_id)
+                    sources = sources.filter(Q(languages__id=filter_id) | Q(primary_language__id=filter_id))
                 elif filter_type == "publisher":
                     sources = sources.filter(publisher__id=filter_id)
                 elif filter_type == "field":
-                    sources = sources.filter(fields__id=filter_id)
+                    sources = sources.filter(Q(fields__id=filter_id) | Q(primary_genre__id=filter_id))
 
     if format == 'default':
         for source in sources:
