@@ -7,6 +7,16 @@
         #rel_graph {
             width: 100%;
             height: 600px;
+            z-index: 500;
+            background-color: #f5f5f5;
+        }
+
+        #rel_graph_controls {
+            text-align: right;
+            position: relative;
+            top: 38px;
+            left: -4px;
+            z-index: 600;
         }
     </style>
 {% endblock %}
@@ -114,7 +124,17 @@
                                     </button>
                                 </dd>
                             </dl>
-                            <div id="rel_graph" class="hidden"></div>
+                            <div id="graph_container">
+                                <div id="rel_graph_controls" class="hidden">
+                                    <button id="next_node_button" type="button" class="btn btn-primary">
+                                        Next Connected Entry
+                                    </button>
+                                    <button id="hide_graph_button" type="button" class="btn btn-primary">
+                                        Hide Visualization
+                                    </button>
+                                </div>
+                                <div id="rel_graph" class="hidden"></div>
+                            </div>
                         </li>
                     {% endif %}
                     {% if source.doi or source.notes or source.notes2 or source.notes3 or source.notes4 %}
@@ -158,64 +178,102 @@
     <script type="text/javascript" src="{% static 'js/vis-network.js' %}"></script>
     <script type="text/javascript">
         let target_id = "{{ source.id }}";
+        let viz_loaded = false;
+        let network = null;
+        let show_graph_button = $('#show_graph_button');
+        let graph = $('#rel_graph');
+        let graph_controls = $('#rel_graph_controls');
+        let node_neighbors = null;
+        let node_neighbor_cursor = 0;
 
         $(document).ready(function() {
-            let show_graph_button = $('#show_graph_button');
             show_graph_button.click(function() {
-                show_graph_button.append(` <img src="{% static 'img/loading.gif' %}" height="14px" />`);
-                let graph = $('#rel_graph');
-                graph.removeClass('hidden');
+                if (!viz_loaded) {
+                    show_graph_button.append(` <img src="{% static 'img/loading.gif' %}" height="14px" />`);
+                    graph.removeClass('hidden');
 
-                $.getJSON( `/graph?id=${target_id}`, function(data) {
-                    let options = {
-                        nodes: {
-                            shape: 'box',
-                            font: {
-                                color: '#FFFFFF',
-                                size: 16
+                    $.getJSON( `/graph?id=${target_id}`, function(data) {
+                        let options = {
+                            nodes: {
+                                shape: 'box',
+                                font: {
+                                    color: '#FFFFFF',
+                                    size: 16
+                                },
+                                margin: 10
                             },
-                            margin: 10
-                        },
-                        edges: {
-                            smooth: {
-                                type: "cubicBezier",
-                                forceDirection: "vertical",
-                                roundness: 0.4,
+                            edges: {
+                                smooth: {
+                                    type: "cubicBezier",
+                                    forceDirection: "vertical",
+                                    roundness: 0.4,
+                                },
                             },
-                        },
-                        layout: {
-                            hierarchical: {
-                                direction: "UD",
+                            layout: {
+                                hierarchical: {
+                                    direction: "UD",
+                                },
                             },
-                        },
-                        physics: {
-                            hierarchicalRepulsion: {
-                                avoidOverlap: 1,
-                                nodeDistance: 200,
+                            physics: {
+                                hierarchicalRepulsion: {
+                                    avoidOverlap: 1,
+                                    nodeDistance: 200,
+                                },
                             },
-                        },
-                        interaction: {
-                            hover: true,
-                            zoomSpeed: .5
-                        }
-                    };
-                    let network = new vis.Network($('#rel_graph')[0], data, options);
+                            interaction: {
+                                hover: true,
+                                zoomSpeed: .5
+                            }
+                        };
+                        network = new vis.Network($('#rel_graph')[0], data, options);
 
-                    network.on("stabilized", function() {
-                        network.fit({nodes: ['{{ source.id }}']});
-                        network.setSelection({nodes: ['{{ source.id }}']}, {highlightEdges: true});
-                        show_graph_button.addClass('hidden');
-                        graph[0].scrollIntoView();
+                        network.on("stabilized", function() {
+                            if (!viz_loaded) {
+                                network.fit({nodes: [target_id]});
+                                network.setSelection({nodes: [target_id]}, {highlightEdges: true});
+                                show_graph_button.addClass('hidden');
+                                graph_controls.removeClass('hidden');
+                                graph[0].scrollIntoView();
+                                node_neighbors = network.getConnectedNodes(target_id);
+                                node_neighbors.push(target_id);
+
+                                $('#next_node_button').click(function() {
+                                    let neighbor = node_neighbors[node_neighbor_cursor];
+                                    node_neighbor_cursor += 1;
+                                    if (node_neighbor_cursor === node_neighbors.length)
+                                        node_neighbor_cursor = 0;
+
+                                    network.fit({nodes: [neighbor]});
+                                    network.setSelection({nodes: [neighbor]}, {highlightEdges: true})
+                                });
+
+                                $('#hide_graph_button').click(function() {
+                                    graph.addClass('hidden');
+                                    graph_controls.addClass('hidden');
+                                    show_graph_button.removeClass('hidden');
+                                    show_graph_button.html('Visualize Relationships');
+                                });
+
+                                viz_loaded = true;
+                            }
+                        });
+
+                        network.on("click", function(params) {
+                            if (params.nodes.length > 0) {
+                                let clicked_node = params.nodes[0];
+                                if (clicked_node !== target_id)
+                                    window.open(`/detail?id=${clicked_node}`, '_blank');
+                            }
+                        });
                     });
-
-                    network.on("click", function(params) {
-                        if (params.nodes.length > 0) {
-                            let clicked_node = params.nodes[0];
-                            if (clicked_node !== target_id)
-                                window.open(`/detail?id=${clicked_node}`, '_blank');
-                        }
-                    });
-                });
+                } else {
+                    graph.removeClass('hidden');
+                    graph_controls.removeClass('hidden');
+                    show_graph_button.addClass('hidden');
+                    network.fit({nodes: [target_id]});
+                    network.setSelection({nodes: [target_id]}, {highlightEdges: true});
+                    node_neighbor_cursor = 0;
+                }
             });
         });
     </script>

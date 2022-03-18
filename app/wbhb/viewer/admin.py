@@ -73,6 +73,8 @@ class RelationSourceAdmin(admin.TabularInline):
     model = RelationSource
     extra = 1
     fk_name = 'from_source'
+    search_fields = ['relationship', 'to_source']
+    autocomplete_fields = ['to_source']
 
 
 @admin.register(PersonAlias)
