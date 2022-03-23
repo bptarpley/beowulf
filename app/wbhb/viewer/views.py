@@ -96,7 +96,9 @@ def relationship_graph(request):
 
     source_id = _clean(request, 'id')
     source = Source.objects.get(id=source_id)
-    build_graph(source, graph, True)
+    node_ids = {}
+    edge_keys = {}
+    build_graph(source, graph, node_ids, edge_keys, True)
 
     return HttpResponse(
         json.dumps(graph),
@@ -104,7 +106,7 @@ def relationship_graph(request):
     )
 
 
-def build_graph(source, graph, root=False):
+def build_graph(source, graph, node_ids, edge_keys, root=False):
     level = re.search(r'\b\d{4}\b|$', source.pub_year).group()
     if not level or not level.isdigit():
         level = 2000
@@ -120,14 +122,18 @@ def build_graph(source, graph, root=False):
     if root:
         node['color'] = '#5F0000'
     graph['nodes'].append(node)
+    node_ids[str(source.id)] = True
 
     relationships = RelationSource.objects.filter(from_source=source).order_by('relationship')
+    related_sources = []
     for relation in relationships:
         rel_label = str(relation.relationship).strip()
         if rel_label not in ['See also']:
-            node_ids = [n['id'] for n in graph['nodes']]
-            if str(relation.to_source.id) not in node_ids:
+            edge_key = "{0}__{1}".format(source.id, relation.to_source.id)
+            if int(source.id) > int(relation.to_source.id):
+                edge_key = "{0}__{1}".format(relation.to_source.id, source.id)
 
+            if edge_key not in edge_keys:
                 rel_edge = {
                     'from': str(source.id),
                     'to': str(relation.to_source.id),
@@ -137,8 +143,12 @@ def build_graph(source, graph, root=False):
                     rel_edge['dashes'] = True
 
                 graph['edges'].append(rel_edge)
+                edge_keys[edge_key] = True
+                related_sources.append(relation.to_source)
 
-                build_graph(relation.to_source, graph)
+    for related_source in related_sources:
+        if str(related_source.id) not in node_ids:
+            build_graph(related_source, graph, node_ids, edge_keys)
 
 
 def export(request):

@@ -218,6 +218,7 @@
                                 hierarchicalRepulsion: {
                                     avoidOverlap: 1,
                                     nodeDistance: 200,
+                                    springConstant: .005
                                 },
                             },
                             interaction: {
@@ -229,7 +230,7 @@
 
                         network.on("stabilized", function() {
                             if (!viz_loaded) {
-                                network.fit({nodes: [target_id]});
+                                network.fit({ nodes: [target_id], animation: true });
                                 network.setSelection({nodes: [target_id]}, {highlightEdges: true});
                                 show_graph_button.addClass('hidden');
                                 graph_controls.removeClass('hidden');
@@ -243,7 +244,7 @@
                                     if (node_neighbor_cursor === node_neighbors.length)
                                         node_neighbor_cursor = 0;
 
-                                    network.fit({nodes: [neighbor]});
+                                    network.fit({ nodes: [neighbor], animation: true });
                                     network.setSelection({nodes: [neighbor]}, {highlightEdges: true})
                                 });
 
