@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
+from django.urls import path
 from django.contrib import admin
 from wbhb.viewer import views as viewer_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -36,7 +37,7 @@ urlpatterns = [
     url(r'^fields$', viewer_views.fields, name='fields'),
     url(r'^periods$', viewer_views.periods, name='periods'),
     url(r'^graph$', viewer_views.relationship_graph, name='graph'),
-    url(r'^page/([a-zA-Z]*)$', viewer_views.page),
+    path('page/<str:slug>', viewer_views.page),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

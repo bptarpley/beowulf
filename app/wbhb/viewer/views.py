@@ -13,19 +13,16 @@ from .models import *
 
 def index(request):
 
-    pages = HTMLBlock.objects.all()
-
     return render(
         request,
         'index.html',
         {
-            'pages': pages
+            'pages': _get_pages()
         }
     )
 
 
-def page(request, nice_url):
-    pages = HTMLBlock.objects.all()
+def page(request, slug):
 
     default_block = {
         'name': "Oops!",
@@ -35,7 +32,7 @@ def page(request, nice_url):
     }
 
     try:
-        block = HTMLBlock.objects.get(name=nice_url)
+        block = HTMLBlock.objects.get(slug=slug)
     except:
         block = default_block
 
@@ -43,14 +40,13 @@ def page(request, nice_url):
         request,
         'page.html',
         {
-            'pages': pages,
+            'pages': _get_pages(),
             'html_block': block
         }
     )
 
 
 def source_detail(request):
-    pages = HTMLBlock.objects.all()
     source = None
     last_update = None
     relationships = []
@@ -82,10 +78,14 @@ def source_detail(request):
         {
             'source': source,
             'relationships': relationships,
-            'pages': pages,
+            'pages': _get_pages(),
             'last_update': last_update
         }
     )
+
+
+def _get_pages():
+    return HTMLBlock.objects.all().only('name', 'slug').order_by('order')
 
 
 def relationship_graph(request):

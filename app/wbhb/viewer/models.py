@@ -336,6 +336,8 @@ class Source(models.Model):
 
 class HTMLBlock(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    slug = models.CharField(max_length=100, unique=True, null=True)
+    order = models.IntegerField(default=0)
     content = models.TextField(blank=True, null=True, verbose_name='Content')
 
     def __str__(self):
@@ -344,7 +346,7 @@ class HTMLBlock(models.Model):
     class Meta:
         verbose_name = 'Page'
         verbose_name_plural = 'Pages'
-        ordering = ['name']
+        ordering = ['order']
 
 
 def _clear_cache():

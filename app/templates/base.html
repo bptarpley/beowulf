@@ -69,7 +69,7 @@
                 <div class="text-center" style="width: auto; height: 100%; display: flex; align-items: center; justify-content: center; margin-left: auto; margin-right: auto;">
                     {% for page in pages %}
                         <a class="btn btn-info"
-                           href="/page/{{ page.name }}"
+                           href="/page/{{ page.slug }}"
                            style="color: #FFFFFF; {% if not forloop.last %}margin-right: 10px;{% endif %}">{{ page.name }}</a>
                     {% endfor %}
                 </div>
