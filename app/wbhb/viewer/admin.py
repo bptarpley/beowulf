@@ -57,8 +57,8 @@ class RoleAdmin(admin.ModelAdmin):
 # PERSON
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
-    search_fields = ('first_name', 'last_name', 'title',)
-
+    search_fields = ('first_name', 'last_name', 'title', 'URI')
+    list_display = ['full_name', 'vetted']
 
 class RolePersonAdmin(admin.TabularInline):
     model = RolePerson

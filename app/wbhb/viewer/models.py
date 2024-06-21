@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.cache import cache
@@ -91,6 +92,10 @@ class Person(models.Model):
     first_name = models.CharField(max_length=50, null=True, blank=True)
     last_name = models.CharField(max_length=50)
     title = models.CharField(max_length=35, blank=True, null=True)
+    URI = models.CharField(max_length=255, blank=True, null=True)
+    birth_date = models.DateField(blank=True, null=True)
+    death_date = models.DateField(blank=True, null=True)
+    vetted = models.BooleanField(default=False)
 
     def __str__(self):
         name = ''
@@ -123,12 +128,20 @@ class Person(models.Model):
 
         return name
 
+    @admin.display(ordering=models.functions.Concat('last_name', models.Value(','), 'first_name'))
+    def full_name(self):
+        return self.__str__()
+
     def to_dict(self):
         return {
             'id': self.id,
+            'full_name': self.__str__(),
             'first_name': self.first_name,
             'last_name': self.last_name,
-            'title': self.title
+            'title': self.title,
+            'URI': self.URI,
+            'birth_date': self.birth_date.isoformat() if self.birth_date else None,
+            'death_date': self.death_date.isoformat() if self.death_date else None,
         }
 
     class Meta:

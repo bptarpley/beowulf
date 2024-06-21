@@ -287,7 +287,11 @@ def people(request):
     if request.method == 'GET':
         format = _clean(request, 'format', 'default')
 
-    people = Person.objects.all()
+    people = []
+    if 'id' in request.GET:
+        people = Person.objects.filter(pk=request.GET['id'])
+    else:
+        people = Person.objects.all()
 
     if format == 'default':
         for person in people:

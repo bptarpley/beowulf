@@ -237,6 +237,11 @@
             $('#publisher-table').addClass('table table-striped table-bordered');
             $('#field-table').addClass('table table-striped table-bordered');
             $('#role-table').addClass('table table-striped table-bordered');
+
+            let get_params = new URLSearchParams(window.location.search)
+            if (get_params.get('person-id') && get_params.get('person-name')) {
+                filter('person', get_params.get('person-id'), get_params.get('person-name'))
+            }
         });
 
         function filter(type, id, desc) {

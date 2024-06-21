@@ -62,7 +62,7 @@
                         <li class="list-group-item">
                             <dl class="dl-horizontal">
                                 {% for roleperson in source.roleperson_set.all %}
-                                    <dt>{{ roleperson.role }}</dt><dd>{{ roleperson.person }}</dd>
+                                <dt>{{ roleperson.role }}</dt><dd><span class="entity" data-id="{{ roleperson.person.id }}">{{ roleperson.person }}</span></dd>
                                 {% endfor %}
                             </dl>
                         </li>
@@ -175,6 +175,8 @@
 {% endblock %}
 
 {% block javascript %}
+    <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/tippy-bundle.umd.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/vis-network.js' %}"></script>
     <script type="text/javascript">
         let target_id = "{{ source.id }}";
@@ -276,6 +278,45 @@
                     node_neighbor_cursor = 0;
                 }
             });
+
+            $('span.entity').each(function() {
+                let entity = jQuery(this)
+                tippy(entity[0], {
+                    arrow: true,
+                    animation: 'fade',
+                    trigger: 'click',
+                    interactive: true,
+                    allowHTML: true,
+                    content: 'Loading...',
+                    onShow(instance) {
+                        $.getJSON(`/people?id=${entity.data('id')}`, function(person) {
+                            if (person.length === 1) person = person[0]
+                            console.log(person)
+                            let content = `
+                                <label class="entity-popup-label">${person.full_name}</label>
+                                ${person.URI ? `<div><b>URI:</b> <a href="${person.URI}" target="_blank">${person.URI}</a></div>` : ''}
+                                <table>
+                                    ${person.first_name ? `<tr><td><b>First Name:</b></td><td>${person.first_name}</td></tr>` : ``}
+                                    ${person.last_name ? `<tr><td><b>Last Name:</b></td><td>${person.last_name}</td></tr>` : ``}
+                                    ${person.title ? `<tr><td><b>Title:</b></td><td>${person.title}</td></tr>` : ``}
+                                    ${person.birth_date ? `<tr><td><b>Birth:</b></td><td>${person.birth_date}</td></tr>` : ``}
+                                    ${person.death_date ? `<tr><td><b>Death:</b></td><td>${person.death_date}</td></tr>` : ``}
+                                </table>
+
+                                <button type="button"
+                                    class="btn btn-primary"
+                                    onclick="window.open('/?person-id=${person.id}&person-name=${person.full_name}', '_blank')"
+                                    style="margin: 10px auto 0 auto; display: block;"
+                                >
+                                    Show entries with this person
+                                </button>
+                            `
+                            console.log(content)
+                            instance.setContent(content)
+                        })
+                    }
+                })
+            })
         });
     </script>
 {% endblock %}
