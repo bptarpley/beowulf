@@ -299,8 +299,8 @@
                                     ${person.first_name ? `<tr><td><b>First Name:</b></td><td>${person.first_name}</td></tr>` : ``}
                                     ${person.last_name ? `<tr><td><b>Last Name:</b></td><td>${person.last_name}</td></tr>` : ``}
                                     ${person.title ? `<tr><td><b>Title:</b></td><td>${person.title}</td></tr>` : ``}
-                                    ${person.birth_date ? `<tr><td><b>Birth:</b></td><td>${person.birth_date}</td></tr>` : ``}
-                                    ${person.death_date ? `<tr><td><b>Death:</b></td><td>${person.death_date}</td></tr>` : ``}
+                                    ${person.birth_date ? `<tr><td><b>Birth:</b></td><td>${person.birth_date.substring(0, 4)}</td></tr>` : ``}
+                                    ${person.death_date ? `<tr><td><b>Death:</b></td><td>${person.death_date.substring(0, 4)}</td></tr>` : ``}
                                 </table>
 
                                 <button type="button"
