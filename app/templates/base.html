@@ -79,7 +79,13 @@
         {% block content %}{% endblock %}
 
         <footer class="footer">
-            <p>The <a href="http://codhr.dh.tamu.edu">Center of Digital Humanities Research</a> at Texas A&M University</p>
+            <p>
+                <a href="http://codhr.dh.tamu.edu" target="_blank">
+                    <img src="{% static 'img/codhr-footer-logo.png' %}"
+                       alt="Center of Digital Humanities Research at Texas A&M University"
+                       style="height: 50px; width: auto; background-color: #FFFFFF; padding: 5px;">
+                </a>
+            </p>
         </footer>
     </div>
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs-3.3.7/jq-2.2.4/dt-1.10.15/datatables.min.js"></script>
