@@ -25,8 +25,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '@_le&sdkdgfhdfhdf^#$gjjg%7*&xr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'DEBUG_DJANGO' in os.environ
 
-ALLOWED_HOSTS = [os.environ.get('BEOWULF_HOST')]
-
+ALLOWED_HOSTS = [os.environ.get('BEOWULF_HOST', '*')]
+CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('BEOWULF_HOST', '*')}"]
 
 # Application definition
 
