@@ -1,6 +1,9 @@
 import os
 import re
 import json
+from .utilities import fill_caches, make_sources_dict
+from pathlib import Path
+from datetime import datetime, timedelta
 from django.shortcuts import render, HttpResponse
 from django.db.models import prefetch_related_objects, Q
 from django.utils.html import escape
@@ -231,55 +234,6 @@ def sources(request):
     )
 
 
-def make_sources_dict(sources):
-    sources_json = {
-        'data': []
-    }
-    for source in sources:
-        people = "<div class='truncate'>"
-        for person in source.roleperson_set.all():
-            people += person.person.__str__() + " (" + person.role.function + ")<br>"
-        if len(people) > 2:
-            people = people[:-2]
-        people += "</div>"
-
-        countries = ""
-        for location in source.locations.all():
-            countries += location.__str__() + ", "
-        if len(countries) > 2:
-            countries = countries[:-2]
-
-        fields = ""
-        genres = [str(g) for g in source.fields.all()]
-        if source.primary_genre:
-            genres.insert(0, str(source.primary_genre))
-        if genres:
-            fields = "<br>".join(genres)
-
-        languages = ""
-        langs = [str(l) for l in source.languages.all()]
-        if source.primary_language:
-            langs.insert(0, str(source.primary_language))
-        if langs:
-            languages = "<br>".join(langs)
-
-        s_data = [
-            str(source.id),
-            people,
-            "<a href='/detail?id=" + str(source.id) + "' target='_blank'>" + source.title + "</a>",
-            source.pub_year,
-            languages,
-            countries,
-            fields,
-            source.notes,
-            source.notes2,
-            source.notes3
-        ]
-        sources_json['data'].append(s_data)
-
-    return sources_json
-
-
 def people(request):
     format = 'default'
     people_json = []
@@ -472,6 +426,28 @@ def periods(request):
         json.dumps(period_json),
         content_type='application/json'
     )
+
+
+def fill_cache(request):
+    cache_is_stale = True
+    response_message = "Cache not stale yet."
+    lock_file_path = '.last_cache_fill'
+    lock_file = Path(lock_file_path)
+
+    if not lock_file.exists():
+        lock_file.touch()
+    else:
+        lock_file_modified = datetime.fromtimestamp(lock_file.stat().st_mtime)
+        twelve_hours_ago = datetime.now() - timedelta(hours=12)
+        if lock_file_modified >= twelve_hours_ago:
+            cache_is_stale = False
+
+    if cache_is_stale:
+        fill_caches()
+        lock_file.touch()
+        response_message = "Cache filled."
+
+    return HttpResponse(response_message, content_type='text/plain', status=200)
 
 
 def _clean(request, param, default='', method='GET'):

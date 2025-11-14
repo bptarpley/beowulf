@@ -38,6 +38,7 @@ urlpatterns = [
     re_path(r'^periods$', viewer_views.periods, name='periods'),
     re_path(r'^graph$', viewer_views.relationship_graph, name='graph'),
     path('page/<str:slug>', viewer_views.page),
+    path('fill-cache', viewer_views.fill_cache),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
